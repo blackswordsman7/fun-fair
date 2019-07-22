@@ -37,7 +37,7 @@ struct Game
 
     address[2] players;                 // Player;s array
     string[2] nicks;                    
-    uint lastTransaction;               // timestamp => block number
+    uint[2] lastTransactions;               // timestamp => block number
     bool[2] withdrawn;
 
     string creatorHash;                   
@@ -88,6 +88,17 @@ constructor() public {
         gamesData[gameIdx].nicks[1]
         );
     }
+
+    function getGameTimestamps(uint32 gameIdx) 
+    public 
+    view 
+  returns (uint created, uint lastTransaction1, uint lastTransaction2) {
+      return (
+          gamesData[gameIdx].created,
+          gamesData[gameIdx].lastTransactions[0],
+          gamesData[gameIdx].lastTransactions[1]
+      );
+  }
 
     function getGamePlayers(uint32 gameIdx) 
     public 
