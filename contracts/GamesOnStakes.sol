@@ -47,7 +47,7 @@ struct Game
     uint32[] openGames;                    // list of active games' id's
     mapping(uint32 => Game) gamesData;     // data containers
 
-    uint32 lastGameIdx;
+    uint32 nextGameIdx;
 
 constructor() public {
     }
@@ -117,36 +117,52 @@ constructor() public {
    public 
    payable 
    returns (uint32 gameIdx) {
-      gamesData[lastGameIdx].index = openGames.length;
-      gamesData[lastGameIdx].creatorHash = randomNumberHash;
-      gamesData[lastGameIdx].amount = msg.value;
-      gamesData[lastGameIdx].created = now;
-      gamesData[lastGameIdx].nicks[0] = nick;
-      gamesData[lastGameIdx].players[0] = msg.sender;
-      openGames.push(lastGameIdx);
+     require(nextGameIdx + 1 > nextGameIdx);
 
-      gameIdx = lastGameIdx;
-      emit GameCreated(lastGameIdx);
+      gamesData[nextGameIdx].index = openGames.length;
+      gamesData[nextGameIdx].creatorHash = randomNumberHash;
+      gamesData[nextGameIdx].amount = msg.value;
+      gamesData[nextGameIdx].created = now;
+      gamesData[nextGameIdx].nicks[0] = nick;
+      gamesData[nextGameIdx].players[0] = msg.sender;
+      openGames.push(nextGameIdx);
 
-      lastGameIdx++;
+      gameIdx = nextGameIdx;
+      emit GameCreated(nextGameIdx);
+
+      nextGameIdx++;
   }
 
 
-    function acceptGame(uint32 gameIdx, uint8 randomNumber) public payable {
-        emit GameAccepted(lastGameIdx+1);
+    function acceptGame(uint32 gameIdx, uint8 randomNumber, string memory nick) 
+    public 
+    payable {
+    
+    require(gameIdx < nextGameIdx);
+    require(gamesData[gameIdx].players[0] != address(0x0));
+    require(msg.value == gamesData[gameIdx].amount);
+    require(gamesData[gameIdx].players[1] == address(0x0));
+    require(gamesData[gameIdx].status == 0);
+
+    gamesData[gameIdx].guestRandomNumber = randomNumber;
+    gamesData[gameIdx].nicks[1] = nick;
+    gamesData[gameIdx].players[1] = msg.sender;
+    gamesData[gameIdx].lastTransactions[1] = now;
+
+    emit GameAccepted(gameIdx);
     }
 
     function confirmGame(uint32 gameIdx, uint8 originalRandomNumber, bytes32 originalSalt) public {
-        emit GameStarted(lastGameIdx+1);
+        emit GameStarted(gameIdx);
     }
 
-    function markPosition(uint gameIdx, uint8 cell) public {
-        emit PositionMarked(lastGameIdx+1);
+    function markPosition(uint32 gameIdx, uint8 cell) public {
+        emit PositionMarked(gameIdx);
     }
     
 
-    function withdraw(address gameId) public {
-        emit GameEnded(lastGameIdx+1);
+    function withdraw(uint32 gameIdx) public {
+        emit GameEnded(gameIdx);
     }
    
 
