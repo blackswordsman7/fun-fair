@@ -182,8 +182,26 @@ constructor() public {
 
 
     function markPosition(uint32 gameIdx, uint8 cell) public {
+
+        require(gameIdx < nextGameIdx);
+      
+
+        uint8[9] storage cells = gamesData[gameIdx].cells;
+       
         emit PositionMarked(gameIdx);
-    }
+
+        // Board indexes:
+        //    0 1 2
+        //    3 4 5
+        //    6 7 8
+
+        // Detect a winner:
+        // Need Help!!
+
+       
+        }
+
+    
     
 
     function withdraw(uint32 gameIdx) public {
