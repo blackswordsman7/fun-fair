@@ -40,8 +40,8 @@ struct Game
     uint[2] lastTransactions;               // timestamp => block number
     bool[2] withdrawn;
 
-    string creatorHash;                   
-    uint guestRandomNumber;
+    bytes32 creatorHash;                   
+    uint8 guestRandomNumber;
   }
 
     uint32[] openGames;                    // list of active games' id's
@@ -113,7 +113,7 @@ constructor() public {
 
     // Operations
 
-   function createGame(string memory randomNumberHash, string memory nick) 
+   function createGame(bytes32 randomNumberHash, string memory nick) 
    public 
    payable 
    returns (uint32 gameIdx) {
@@ -152,7 +152,7 @@ constructor() public {
     emit GameAccepted(gameIdx);
     }
 
-    function confirmGame(uint32 gameIdx, uint8 originalRandomNumber, string memory originalSalt) public {
+    function confirmGame(uint32 gameIdx, uint8 revealedRandomNumber, string memory revealedSalt) public {
         require(gameIdx < nextGameIdx);
         require(gamesData[gameIdx].players[0] == msg.sender);
         require(gamesData[gameIdx].players[1] != address(0x0));
@@ -160,21 +160,23 @@ constructor() public {
 
 
         // TODO Compare hashes directly, no extra hashing | Figure out, Ask!
-        string memory hash = saltedHash(originalRandomNumber, originalSalt);
-        if(keccak256(hash) != keccak256(gamesData[gameIdx].creatorHash)){
+        bytes32 computedHash = saltedHash(revealedRandomNumber, revealedSalt);
+        if(computedHash != gamesData[gameIdx].creatorHash){
             gamesData[gameIdx].status = 12;
+            emit GameEnded(gameIdx);
             return;
         }
 
         gamesData[gameIdx].lastTransactions[0] = now;
 
         // Logic for deciding turns, if even-even/odd-odd, game creator will have the first chance
-        // If odd-even, guest will have the first chance
-        if((originalRandomNumber ^ gamesData[gameIdx].guestRandomNumber) % 2 == 0){
+        // If odd-even, guest will have the first chance - Define starting player
+        if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) % 2 == 0){
             gamesData[gameIdx].status = 1;
         }
         else {
             gamesData[gameIdx].status = 2;
+            emit GameStarted(gameIdx);
         }
     }
 
