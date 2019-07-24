@@ -20,8 +20,8 @@ contract TestGamesOnStakes3 {
         string memory nick2;
 
         bytes32 hash = gamesInstance.saltedHash(123, "my salt goes here");
-        uint32 gameIdx = gamesInstance.createGame(hash, "John");
-        gamesInstance.acceptGame(gameIdx, 234, "Mary");
+        uint32 gameIdx = gamesInstance.createGame(hash, "Sachin");
+        gamesInstance.acceptGame(gameIdx, 234, "Sanchay");
         gamesInstance.confirmGame(gameIdx, 123, "my salt goes here");
 
         // player 2

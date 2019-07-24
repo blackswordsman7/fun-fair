@@ -184,11 +184,14 @@ constructor() public {
     function markPosition(uint32 gameIdx, uint8 cell) public {
 
         require(gameIdx < nextGameIdx);
-      
+        require(cell<=8, "The parameter must contain a value less than max cell value limit");
 
         uint8[9] storage cells = gamesData[gameIdx].cells;
-       
-        emit PositionMarked(gameIdx);
+        require(cells[cell] == 0, "No Player has started yet");
+
+
+
+        // emit PositionMarked(gameIdx);
 
         // Board indexes:
         //    0 1 2
@@ -197,11 +200,35 @@ constructor() public {
 
         // Detect a winner:
         // Need Help!!
+        // Winning probability in all rows, and columns
 
-       
+        if((cells[0] & cells [1] & cells [2] != 0x0) || (cells[3] & cells [4] & cells [5] != 0x0) ||
+        (cells[6] & cells [7] & cells [8] != 0x0) || (cells[0] & cells [3] & cells [6] != 0x0) ||
+        (cells[1] & cells [4] & cells [7] != 0x0) || (cells[2] & cells [5] & cells [8] != 0x0) ||
+        (cells[0] & cells [4] & cells [8] != 0x0) || (cells[2] & cells [4] & cells [6] != 0x0)) {
+            // winner
+            gamesData[gameIdx].status = 10 + cells[cell];  // 11 or 12
+            emit GameEnded(gameIdx);
         }
 
-    
+        // All cells filled..! Hence, a draw
+        else if(cells[0] != 0x0 && cells[1] != 0x0 && cells[2] != 0x0 && 
+            cells[3] != 0x0 && cells[4] != 0x0 && cells[5] != 0x0 && cells[6] != 0x0 && 
+            cells[7] != 0x0 && cells[8] != 0x0) {
+            
+            gamesData[gameIdx].status = 10;
+            emit GameEnded(gameIdx);
+        }
+        else {
+            if(cells[cell] == 1){
+                gamesData[gameIdx].status = 2;
+            }
+            else if(cells[cell] == 2){
+                gamesData[gameIdx].status = 1;
+            }
+        
+        }
+    }    
     
 
     function withdraw(uint32 gameIdx) public {
