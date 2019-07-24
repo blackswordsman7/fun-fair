@@ -156,10 +156,11 @@ struct Game
     emit GameAccepted(gameIdx);
 
     // Remove Accepted game from the openGames list
-    uint32 idxToDelete = gamesData[gameIdx].index;
-    openGames[idxToDelete] = openGames[openGames.length - 1];
-    gamesData[gameIdx].index = idxToDelete;
-    openGames.length--;
+    uint32 idxToDelete = uint32(gamesData[gameIdx].index);
+        uint32 lastOpenGameIdx = openGames[openGames.length - 1];
+        openGames[idxToDelete] = lastOpenGameIdx;
+        gamesData[lastOpenGameIdx].index = idxToDelete;
+        openGames.length--;
 
     }
 
