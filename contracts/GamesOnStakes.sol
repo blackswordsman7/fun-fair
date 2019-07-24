@@ -35,8 +35,8 @@ struct Game
 
     address[2] players;                 // Player;s array
     string[2] nicks;                    
-    uint[2] lastTransactions;               // timestamp => block number
-    bool[2] withdrawn;
+    uint[2] lastTransactions;           
+    bool[2] withdrawn;                  
 
     bytes32 creatorHash;                   
     uint8 guestRandomNumber;
@@ -122,7 +122,7 @@ struct Game
    public 
    payable 
    returns (uint32 gameIdx) {
-     require(nextGameIdx + 1 > nextGameIdx);
+     require(nextGameIdx > gameIdx);
 
       gamesData[nextGameIdx].index = uint32(openGames.length);
       gamesData[nextGameIdx].creatorHash = randomNumberHash;
@@ -255,8 +255,79 @@ struct Game
     
 
     function withdraw(uint32 gameIdx) public {
-        emit GameEnded(gameIdx);
+      require(gameIdx < nextGameIdx);
+      require(gamesData[gameIdx].amount > 0, "The bet amount can not be 0");
+
+      uint8 status = gamesData[gameIdx].status;
+
+      // Since status = 0, consider it ends in a draw
+      if(status == 0){
+        require(gamesData[gameIdx].players[0] == msg.sender, "The Game creator");
+        require(gamesData[gameIdx].players[1] == address(0x0), "The guest tbd");
+        require(now - gamesData[gameIdx].lastTransactions[0] > timeout, "Game is still alive" );
+
+         gamesData[gameIdx].withdrawn[0] = true;          // Amount withdrawn from the player
+         gamesData[gameIdx].status = 10;                  // consider it ended in draw
+         msg.sender.transfer(gamesData[gameIdx].amount);  // Amount transfered from player to the contract address
+        
+        // Remove this gameId from the openGames list
+        uint32 idxToDelete = uint32(gamesData[gameIdx].index);
+        uint32 lastOpenGameIdx = openGames[openGames.length - 1];
+        openGames[idxToDelete] = lastOpenGameIdx;
+        gamesData[lastOpenGameIdx].index = idxToDelete;
+        openGames.length--;
+      }
+      else if(status == 1){
+        // Player2 won the claim 
+        require(gamesData[gameIdx].players[1] == msg.sender);
+        require(now - gamesData[gameIdx].lastTransactions[0] > timeout, "Game is still alive" );
+
+        gamesData[gameIdx].withdrawn[1] = true;
+        gamesData[gameIdx].status = 12;
+        msg.sender.transfer(gamesData[gameIdx].amount * 2);
+      }
+      else if(status == 2){
+        // Player1 won the game
+        require(gamesData[gameIdx].players[0] == msg.sender);
+        require(now - gamesData[gameIdx].lastTransactions[0] > timeout, "Game is still alive" );
+
+        gamesData[gameIdx].withdrawn[1] = true;
+        gamesData[gameIdx].status = 11;
+        msg.sender.transfer(gamesData[gameIdx].amount * 2);
+      }
+      else if(status == 10){
+            if(gamesData[gameIdx].players[0] == msg.sender){
+                require(!gamesData[gameIdx].withdrawn[0]);
+
+                gamesData[gameIdx].withdrawn[0] = true;
+                msg.sender.transfer(gamesData[gameIdx].amount);
+            }
+      }
+      else if(gamesData[gameIdx].players[1] == msg.sender){
+          require(!gamesData[gameIdx].withdrawn[1]);
+
+          gamesData[gameIdx].withdrawn[1] = true;
+          msg.sender.transfer(gamesData[gameIdx].amount);
+      }
+      else if(status == 11){
+          require(gamesData[gameIdx].players[0] == msg.sender);
+          require(!gamesData[gameIdx].withdrawn[0]);
+
+          gamesData[gameIdx].withdrawn[0] = true;
+          msg.sender.transfer(gamesData[gameIdx].amount * 2);
+      }
+      else if(status == 12){
+          require(gamesData[gameIdx].players[1] == msg.sender);
+          require(!gamesData[gameIdx].withdrawn[1]);
+
+          gamesData[gameIdx].withdrawn[1] = true;
+          msg.sender.transfer(gamesData[gameIdx].amount * 2);
+      }
+      else {
+          revert();
+      }
     }
+
    
 
     // Imported from library - public helper function
