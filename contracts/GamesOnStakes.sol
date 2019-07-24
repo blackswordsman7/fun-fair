@@ -35,8 +35,8 @@ struct Game
 
     address[2] players;                 // Player;s array
     string[2] nicks;                    
-    uint[2] lastTransactions;               // timestamp => block number
-    bool[2] withdrawn;
+    uint[2] lastTransactions;           
+    bool[2] withdrawn;                  //  The corresponding amount withdrawn after result of game
 
     bytes32 creatorHash;                   
     uint8 guestRandomNumber;
