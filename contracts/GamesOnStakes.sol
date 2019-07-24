@@ -189,9 +189,18 @@ constructor() public {
         uint8[9] storage cells = gamesData[gameIdx].cells;
         require(cells[cell] == 0, "No Player has started yet");
 
+        if(gamesData[gameIdx].status == 1){
+          require(gamesData[gameIdx].players[0] == msg.sender, "Game creator is the player 1");
+        }
 
+        else if(gamesData[gameIdx].status == 2){
+          require(gamesData[gameIdx].players[1] == msg.sender, "Guest is the player 1");
+        }
+        else{
+          revert();
+        }
 
-        // emit PositionMarked(gameIdx);
+        emit PositionMarked(gameIdx);
 
         // Board indexes:
         //    0 1 2
@@ -226,7 +235,9 @@ constructor() public {
             else if(cells[cell] == 2){
                 gamesData[gameIdx].status = 1;
             }
-        
+            else{
+              revert();
+            }
         }
     }    
     
