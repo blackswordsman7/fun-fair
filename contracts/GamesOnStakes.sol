@@ -22,7 +22,7 @@ struct Game
   {
 
     
-    uint index;            // position in openGames[]
+    uint32 index;            // position in openGames[]
     uint8[9] cells;  
 
     // [123 | 456 | 789] containing [0 => nobody, 1 => X, 2 => O]    
@@ -31,8 +31,6 @@ struct Game
     // 10 => draw, 11 => player 1 wins, 12 => player 2 wins
 
     uint8 status;                   
-    
-    //uint created;                       // Timestamp
     uint amount;                        // amount of money each user has sent
 
     address[2] players;                 // Player;s array
@@ -126,7 +124,7 @@ struct Game
    returns (uint32 gameIdx) {
      require(nextGameIdx + 1 > nextGameIdx);
 
-      gamesData[nextGameIdx].index = openGames.length;
+      gamesData[nextGameIdx].index = uint32(openGames.length);
       gamesData[nextGameIdx].creatorHash = randomNumberHash;
       gamesData[nextGameIdx].amount = msg.value;
       gamesData[nextGameIdx].nicks[0] = nick;
@@ -156,6 +154,13 @@ struct Game
     gamesData[gameIdx].lastTransactions[1] = now;
 
     emit GameAccepted(gameIdx);
+
+    // Remove Accepted game from the openGames list
+    uint32 idxToDelete = gamesData[gameIdx].index;
+    openGames[idxToDelete] = openGames[openGames.length - 1];
+    gamesData[gameIdx].index = idxToDelete;
+    openGames.length--;
+
     }
 
     function confirmGame(uint32 gameIdx, uint8 revealedRandomNumber, string memory revealedSalt) public {

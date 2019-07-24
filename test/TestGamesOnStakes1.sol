@@ -92,13 +92,17 @@ contract TestGamesOnStakes1 {
         uint32[] memory openGames = gamesInstance.getOpenGames();
         Assert.equal(openGames.length, 1, "One game should be available");
 
-        gamesInstance.acceptGame(openGames[0], 0, "Sanchay");
+        uint32 gameIdx = openGames[0];
+
+        gamesInstance.acceptGame(gameIdx, 234, "Sanchay");
 
         openGames = gamesInstance.getOpenGames();
-        Assert.equal(openGames.length, 1, "One game should still exist");
-        Assert.equal(uint(openGames[0]), 0, "The game should still have index 0");
+        // Assert.equal(openGames.length, 1, "One game should still exist");
+        // Assert.equal(uint(openGames[0]), 0, "The game should still have index 0");
 
-        (cells, status, amount, nick1, nick2) = gamesInstance.getGameInfo(openGames[0]);
+        Assert.equal(openGames.length, 0, "The game should not be available anymore");
+
+        (cells, status, amount, nick1, nick2) = gamesInstance.getGameInfo(gameIdx);
         Assert.equal(uint(cells[0]), 0, "The board should be empty");
         Assert.equal(uint(cells[1]), 0, "The board should be empty");
         Assert.equal(uint(cells[2]), 0, "The board should be empty");
@@ -113,7 +117,7 @@ contract TestGamesOnStakes1 {
         Assert.equal(nick1, "Sachin", "The nick should be Sachin");
         Assert.equal(nick2, "Sanchay", "The nick should be Sanchay");
 
-        (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(openGames[0]);
+        (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
         Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
         Assert.isAbove(lastTransaction2, 0, "The second player's transaction timestamp should be set");
 
