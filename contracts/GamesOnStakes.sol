@@ -32,7 +32,7 @@ struct Game
 
     uint8 status;                   
     
-    uint created;                       // Timestamp
+    //uint created;                       // Timestamp
     uint amount;                        // amount of money each user has sent
 
     address[2] players;                 // Player;s array
@@ -51,7 +51,7 @@ struct Game
     uint16 public timeout;                  // Game Timeout
 
     // TODO: Apply limit!
-    
+
     constructor(uint16 givenTimeout) public {
       if(givenTimeout!= 0){
           timeout = givenTimeout;    
@@ -86,13 +86,12 @@ struct Game
     function getGameInfo(uint32 gameIdx)
     public
     view 
-    returns (uint8[9] memory cells, uint8 status, uint amount, uint created, string memory nick1, string memory nick2) {
+    returns (uint8[9] memory cells, uint8 status, uint amount, string memory nick1, string memory nick2) {
         return (
 
         gamesData[gameIdx].cells,
         gamesData[gameIdx].status,
         gamesData[gameIdx].amount,
-        gamesData[gameIdx].created,
         gamesData[gameIdx].nicks[0],
         gamesData[gameIdx].nicks[1]
         );
@@ -101,9 +100,8 @@ struct Game
     function getGameTimestamps(uint32 gameIdx) 
     public 
     view 
-  returns (uint created, uint lastTransaction1, uint lastTransaction2) {
+  returns (uint lastTransaction1, uint lastTransaction2) {
       return (
-          gamesData[gameIdx].created,
           gamesData[gameIdx].lastTransactions[0],
           gamesData[gameIdx].lastTransactions[1]
       );
@@ -131,7 +129,6 @@ struct Game
       gamesData[nextGameIdx].index = openGames.length;
       gamesData[nextGameIdx].creatorHash = randomNumberHash;
       gamesData[nextGameIdx].amount = msg.value;
-      gamesData[nextGameIdx].created = now;
       gamesData[nextGameIdx].nicks[0] = nick;
       gamesData[nextGameIdx].players[0] = msg.sender;
       openGames.push(nextGameIdx);

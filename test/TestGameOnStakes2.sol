@@ -26,7 +26,7 @@ contract TestGamesOnStakes2 {
         uint32 gameIdx = gamesInstance.createGame(hash, "Sachin");
         gamesInstance.acceptGame(gameIdx, 234, "Sanchay");
 
-        // (created, lastTransaction1pre, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
+      
 
         gamesInstance.confirmGame(gameIdx, 123, "my salt goes here");
 

@@ -45,7 +45,6 @@ contract TestGamesOnStakes1 {
         uint amount;
         string memory nick1;
         string memory nick2;
-        uint created;
         uint lastTransaction1;
         uint lastTransaction2;
 
@@ -59,7 +58,7 @@ contract TestGamesOnStakes1 {
         Assert.equal(openGames.length, 1, "One game should have been created");
         
 
-        (cells, status, amount, created, nick1, nick2) = gamesInstance.getGameInfo(gameIdx);
+        (cells, status, amount, nick1, nick2) = gamesInstance.getGameInfo(gameIdx);
         Assert.equal(uint(cells[0]), 0, "The board should be empty");
         Assert.equal(uint(cells[1]), 0, "The board should be empty");
         Assert.equal(uint(cells[2]), 0, "The board should be empty");
@@ -71,12 +70,11 @@ contract TestGamesOnStakes1 {
         Assert.equal(uint(cells[8]), 0, "The board should be empty");
         Assert.equal(uint(status), 0, "The game should not be started");
         Assert.equal(amount, 0, "The initial amount should be zero");
-        //Assert.equal(created, 0, "Not created yet");
+    
         Assert.equal(nick1, "Sachin", "The nick should be Sachin");
         Assert.isEmpty(nick2, "Sanchay should be empty");
 
-        (created, lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
-        Assert.isAbove(created, 0, "Creation date should be set");
+        (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
         Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
         Assert.equal(lastTransaction2, 0, "The second player's transaction timestamp should be empty");
     }
@@ -88,7 +86,6 @@ contract TestGamesOnStakes1 {
         uint amount;
         string memory nick1;
         string memory nick2;
-        uint created;
         uint lastTransaction1;
         uint lastTransaction2;
 
@@ -116,8 +113,7 @@ contract TestGamesOnStakes1 {
         Assert.equal(nick1, "Sachin", "The nick should be Sachin");
         Assert.equal(nick2, "Sanchay", "The nick should be Sanchay");
 
-        (created, lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(openGames[0]);
-        Assert.isAbove(created, 0, "Creation date should be set");
+        (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(openGames[0]);
         Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
         Assert.isAbove(lastTransaction2, 0, "The second player's transaction timestamp should be set");
 
