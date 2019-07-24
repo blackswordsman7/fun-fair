@@ -170,8 +170,8 @@ constructor() public {
         gamesData[gameIdx].lastTransactions[0] = now;
 
         // Logic for deciding turns, if even-even/odd-odd, game creator will have the first chance
-        // If odd-even, guest will have the first chance - Define starting player
-        if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) % 2 == 0){
+        // If odd-even, guest will have the first chance - ||Define starting player||
+        if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) & 0x0 == 0){
             gamesData[gameIdx].status = 1;
         }
         else {
@@ -190,11 +190,11 @@ constructor() public {
         require(cells[cell] == 0, "No Player has started yet");
 
         if(gamesData[gameIdx].status == 1){
-          require(gamesData[gameIdx].players[0] == msg.sender, "Game creator is the player 1");
+          require(gamesData[gameIdx].players[0] == msg.sender, "Position marked! Game creator is the player 1");
         }
 
         else if(gamesData[gameIdx].status == 2){
-          require(gamesData[gameIdx].players[1] == msg.sender, "Guest is the player 1");
+          require(gamesData[gameIdx].players[1] == msg.sender, "Position marked! Guest is the player 1");
         }
         else{
           revert();
