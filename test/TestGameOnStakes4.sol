@@ -75,6 +75,6 @@ contract TestGamesOnStakes4 {
         gamesInstance.withdraw(gameIdx);                        
         uint balancePost = address(this).balance;
 
-        Assert.equal(balancePre + 0.01 ether, balancePost, "Withdrawal should have transfered only 0.01 ether yet");
+        Assert.equal(balancePre + 0.01 ether, balancePost, "Withdrawal should have transfered 0.01 ether");
     }
 }
