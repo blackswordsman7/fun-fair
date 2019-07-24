@@ -1,8 +1,8 @@
-// test/TestGamesOnStakes1.sol
+// test/TestGamesOnStakes2.sol
 pragma solidity ^0.5.0;
 
 import "truffle/Assert.sol";
-
+import "truffle/DeployedAddresses.sol";
 import "../contracts/GamesOnStakes.sol";
 import "../contracts/StringSupport.sol";
 

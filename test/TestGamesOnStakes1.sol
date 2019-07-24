@@ -2,7 +2,7 @@
 pragma solidity ^0.5.0;
 
 import "truffle/Assert.sol";
-
+import "truffle/DeployedAddresses.sol";
 import "../contracts/GamesOnStakes.sol";
 import "../contracts/StringSupport.sol";
 
@@ -18,14 +18,14 @@ contract TestGamesOnStakes1 {
     }
 
     function testHashingFunction() public {
-        bytes32 memory hash1 = gamesInstance.saltedHash(123, "my salt goes here");
-        bytes32 memory hashA = StringSupport.saltedHash(123, "my salt goes here");
+        bytes32 hash1 = gamesInstance.saltedHash(123, "my salt goes here");
+        bytes32 hashA = StringSupport.saltedHash(123, "my salt goes here");
 
-        bytes32 memory hash2 = gamesInstance.saltedHash(123, "my salt goes 2 here");
-        bytes32 memory hashB = StringSupport.saltedHash(123, "my salt goes 2 here");
+        bytes32 hash2 = gamesInstance.saltedHash(123, "my salt goes 2 here");
+        bytes32 hashB = StringSupport.saltedHash(123, "my salt goes 2 here");
 
-        bytes32 memory hash3 = gamesInstance.saltedHash(234, "my salt goes here");
-        bytes32 memory hashC = StringSupport.saltedHash(234, "my salt goes here");
+        bytes32 hash3 = gamesInstance.saltedHash(234, "my salt goes here");
+        bytes32 hashC = StringSupport.saltedHash(234, "my salt goes here");
 
         Assert.isNotZero(hash1, "Salted hash should be a valid string");
 
@@ -77,6 +77,7 @@ contract TestGamesOnStakes1 {
         (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
         Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
         Assert.equal(lastTransaction2, 0, "The second player's transaction timestamp should be empty");
+       
     }
 
     function testGameAccepted() public{
@@ -120,7 +121,6 @@ contract TestGamesOnStakes1 {
         (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
         Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
         Assert.isAbove(lastTransaction2, 0, "The second player's transaction timestamp should be set");
-
     }
    
 }

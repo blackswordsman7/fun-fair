@@ -4,6 +4,7 @@ pragma solidity ^0.5.0;
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
 import "../contracts/GamesOnStakes.sol";
+import "../contracts/StringSupport.sol";
 
 contract TestGamesOnStakes3 {
     GamesOnStakes gamesInstance;
@@ -98,6 +99,6 @@ contract TestGamesOnStakes3 {
         Assert.equal(uint(cells[7]), 0, "The board should be empty");
         Assert.equal(uint(cells[8]), 0, "The board should be empty");
         Assert.equal(uint(status), 12, "The game should be won by player 2");
-
+        
     }
 }

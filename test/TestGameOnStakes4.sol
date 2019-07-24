@@ -4,6 +4,7 @@ pragma solidity ^0.5.0;
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
 import "../contracts/GamesOnStakes.sol";
+import "../contracts/StringSupport.sol";
 
 contract TestGamesOnStakes4 {
     GamesOnStakes gamesInstance;
@@ -76,5 +77,6 @@ contract TestGamesOnStakes4 {
         uint balancePost = address(this).balance;
 
         Assert.equal(balancePre + 0.01 ether, balancePost, "Withdrawal should have transfered 0.01 ether");
+        
     }
 }

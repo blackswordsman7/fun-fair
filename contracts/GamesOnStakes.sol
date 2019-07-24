@@ -184,6 +184,7 @@ struct Game
         // If odd-even, guest will have the first chance - ||Define starting player||
         if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) & 0x0 == 0){
             gamesData[gameIdx].status = 1;
+            emit GameStarted(gameIdx);
         }
         else {
             gamesData[gameIdx].status = 2;
@@ -202,10 +203,12 @@ struct Game
 
         if(gamesData[gameIdx].status == 1){
           require(gamesData[gameIdx].players[0] == msg.sender, "Position marked! Game creator is the player 1");
+          emit PositionMarked(gameIdx);
         }
 
         else if(gamesData[gameIdx].status == 2){
           require(gamesData[gameIdx].players[1] == msg.sender, "Position marked! Guest is the player 1");
+          emit PositionMarked(gameIdx);
         }
         else{
           revert();
@@ -267,13 +270,15 @@ struct Game
          gamesData[gameIdx].withdrawn[0] = true;          // Amount withdrawn from the player
          gamesData[gameIdx].status = 10;                  // consider it ended in draw
          msg.sender.transfer(gamesData[gameIdx].amount);  // Amount transfered from player to the contract address
-        
+         emit GameEnded(gameIdx);
         // Remove this gameId from the openGames list
         uint32 idxToDelete = uint32(gamesData[gameIdx].index);
         uint32 lastOpenGameIdx = openGames[openGames.length - 1];
         openGames[idxToDelete] = lastOpenGameIdx;
         gamesData[lastOpenGameIdx].index = idxToDelete;
         openGames.length--;
+
+        emit GameEnded(gameIdx);
       }
       else if(status == 1){
         // Player2 won the claim 
@@ -283,6 +288,8 @@ struct Game
         gamesData[gameIdx].withdrawn[1] = true;
         gamesData[gameIdx].status = 12;
         msg.sender.transfer(gamesData[gameIdx].amount * 2);
+
+         emit GameEnded(gameIdx);
       }
       else if(status == 2){
         // Player1 won the game
@@ -292,6 +299,8 @@ struct Game
         gamesData[gameIdx].withdrawn[1] = true;
         gamesData[gameIdx].status = 11;
         msg.sender.transfer(gamesData[gameIdx].amount * 2);
+
+         emit GameEnded(gameIdx);
       }
       else if(status == 10){
             if(gamesData[gameIdx].players[0] == msg.sender){
