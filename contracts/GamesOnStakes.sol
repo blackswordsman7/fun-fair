@@ -31,9 +31,9 @@ struct Game
     // 10 => draw, 11 => player 1 wins, 12 => player 2 wins
 
     uint8 status;                   
-    uint amount;                        // amount of money each user has sent
+    uint amount;                       
 
-    address[2] players;                 // Player;s array
+    address[2] players;                 // Player's array
     string[2] nicks;                    
     uint[2] lastTransactions;           
     bool[2] withdrawn;                  
@@ -170,8 +170,7 @@ struct Game
         require(gamesData[gameIdx].players[1] != address(0x0));
         require(gamesData[gameIdx].status == 0);
 
-
-        // TODO Compare hashes directly, no extra hashing | Figure out, Ask!
+      
         bytes32 computedHash = saltedHash(revealedRandomNumber, revealedSalt);
         if(computedHash != gamesData[gameIdx].creatorHash){
             gamesData[gameIdx].status = 12;
@@ -220,7 +219,6 @@ struct Game
         //    6 7 8
 
         // Detect a winner:
-        // Need Help!!
         // Winning probability in all rows, and columns
 
         if((cells[0] & cells [1] & cells [2] != 0x0) || (cells[3] & cells [4] & cells [5] != 0x0) ||
@@ -302,12 +300,12 @@ struct Game
                 gamesData[gameIdx].withdrawn[0] = true;
                 msg.sender.transfer(gamesData[gameIdx].amount);
             }
-      }
-      else if(gamesData[gameIdx].players[1] == msg.sender){
+            else if(gamesData[gameIdx].players[1] == msg.sender){
           require(!gamesData[gameIdx].withdrawn[1]);
 
           gamesData[gameIdx].withdrawn[1] = true;
           msg.sender.transfer(gamesData[gameIdx].amount);
+           }
       }
       else if(status == 11){
           require(gamesData[gameIdx].players[0] == msg.sender);
