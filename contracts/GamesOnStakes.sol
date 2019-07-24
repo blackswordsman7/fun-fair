@@ -48,8 +48,17 @@ struct Game
     mapping(uint32 => Game) gamesData;     // data containers
 
     uint32 nextGameIdx;
+    uint16 public timeout;                  // Game Timeout
 
-constructor() public {
+    // TODO: Apply limit!
+    
+    constructor(uint16 givenTimeout) public {
+      if(givenTimeout!= 0){
+          timeout = givenTimeout;    
+      }
+      else{
+        timeout = 10 minutes;
+      }
     }
 
     // EVENTS
