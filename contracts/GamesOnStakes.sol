@@ -36,11 +36,7 @@ struct Game
     address[2] players;                 // Player's array
     string[2] nicks;                    
     uint[2] lastTransactions;           
-<<<<<<< HEAD
     bool[2] withdrawn;                  
-=======
-    bool[2] withdrawn;                  //  The corresponding amount withdrawn after result of game
->>>>>>> d802ed53eab1a678a713497bae135eb1a0f3741a
 
     bytes32 creatorHash;                   
     uint8 guestRandomNumber;
