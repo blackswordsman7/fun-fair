@@ -3,6 +3,7 @@
 
 #Dependencies
 /node_modules
+/Frontend/node_modules
 
 #Production
 /build/contracts
