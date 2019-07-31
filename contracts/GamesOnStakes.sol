@@ -13,43 +13,51 @@ contract GamesOnStakes {
 ///@dev For any queries, generate an issue, or email at " "
 
 
-// * Ethereum smart contract, deployed at "given address". */
+/** SIMPLE USE CASE
 
-/// *** STATE VARIABLES 
+Sachin opens a game, bets 0.01 ether and appears in a list of users who are up to play
+Sanchay sees Sachin on the list and accepts the game by betting 0.01 ether too
+Sachin confirms and the game starts
+Sachin and Sanchay make their moves, one after each other
+If one of them wins, he or she can withdraw 0.02 ether from the contract
+If the game ends in draw, both users can withdraw 0.01 ether
+*/
 
+
+/// STATE VARIABLES 
+
+// The Game Object
 
 struct Game 
-  {
-
-    
-    uint32 index;            // position in openGames[]
-    uint8[9] cells;  
-
-    // [123 | 456 | 789] containing [0 => nobody, 1 => X, 2 => O]    
-
-    // 0 => not started, 1 => player 1, 2 => player 2
-    // 10 => draw, 11 => player 1 wins, 12 => player 2 wins
+  {    
+    uint32 index;            // position in openGames[] list
+    uint8[9] cells;          
 
     uint8 status;                   
     uint amount;                       
 
     address[2] players;                 // Player's array
-    string[2] nicks;                    
-    uint[2] lastTransactions;           
-    bool[2] withdrawn;                  
+    string[2] nicks;                    // Player's name Array
+    uint[2] lastTransactions;           // Latest transactions performed
+    bool[2] withdrawn;                  // If the money, is withdrawn or not
 
-    bytes32 creatorHash;                   
-    uint8 guestRandomNumber;
+    bytes32 creatorHash;                // The hash of player who created the game  
+    uint8 guestRandomNumber;            // The random number provided by the guest player for deciding who will play first
   }
 
     uint32[] openGames;                    // list of active games' id's
-    mapping(uint32 => Game) gamesData;     // data containers
+    mapping(uint32 => Game) gamesData;     // To access the details of the game
 
-    uint32 nextGameIdx;
+    uint32 nextGameIdx;                    // Pointer to help parse, and check conditions  
     uint16 public timeout;                  // Game Timeout
 
-    // TODO: Apply limit!
+    // Pause
+    bool public contractPaused = false;
 
+
+    // @notice By default, after 10 minutes, timeout will occur
+    // @dev Value provided in the ./migrations/2_deploy_contract.js 
+    // @param Game timeout 
     constructor(uint16 givenTimeout) public {
       if(givenTimeout!= 0){
           timeout = givenTimeout;    
@@ -62,17 +70,17 @@ struct Game
     // EVENTS
 
     event GameCreated(uint32 indexed gameIdx);
-    event GameAccepted(uint32 indexed gameIdx);
-    event GameStarted(uint32 indexed gameIdx);
-    
-    event PositionMarked(uint32 indexed gameIdx);
-    event GameEnded(uint32 indexed gameIdx);
+    event GameAccepted(uint32 indexed gameIdx, address indexed opponent);
+    event GameStarted(uint32 indexed gameIdx, address indexed opponent);
+    event PositionMarked(uint32 indexed gameIdx, address indexed opponent);
+    event GameEnded(uint32 indexed gameIdx, address indexed opponent);
 
 
     // Member Functions
 
     //Callable 
 
+    
     function getOpenGames() 
     public 
     view 
