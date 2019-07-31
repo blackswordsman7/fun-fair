@@ -38,7 +38,7 @@ struct Game
 
     address[2] players;                 // Player's array
     string[2] nicks;                    // Player's name Array
-    uint[2] lastTransactions;           // Latest transactions performed
+    uint lastTransaction;               //timestamp => Block Number
     bool[2] withdrawn;                  // If the money, is withdrawn or not
 
     bytes32 creatorHash;                // The hash of player who created the game  
@@ -53,6 +53,19 @@ struct Game
 
     // Pause
     bool public contractPaused = false;
+    ///@notice Owner's address
+    address public owner;                    //owner of the contract
+
+
+     modifier onlyOwner(){
+    require(owner == msg.sender,"Owner's permission is required");
+    _;
+  }
+
+    modifier checkIfPaused() {
+    require(contractPaused == false," Contract is paused right now ");
+    _;
+  }
 
 
     // @notice By default, after 10 minutes, timeout will occur
@@ -88,7 +101,7 @@ struct Game
       return openGames;
     }
 
-
+    // Game Info - Name of the players, status of the game, 
     function getGameInfo(uint32 gameIdx)
     public
     view 
@@ -106,11 +119,8 @@ struct Game
     function getGameTimestamps(uint32 gameIdx) 
     public 
     view 
-  returns (uint lastTransaction1, uint lastTransaction2) {
-      return (
-          gamesData[gameIdx].lastTransactions[0],
-          gamesData[gameIdx].lastTransactions[1]
-      );
+  returns (uint lastTransaction) {
+      return (gamesData[gameIdx].lastTransaction);
   }
 
     function getGamePlayers(uint32 gameIdx) 
@@ -123,6 +133,13 @@ struct Game
         );
     }
 
+    function getGameWithdrawals(uint32 gameIdx) public view 
+    returns (bool player1, bool player2) {
+        return (
+            gamesData[gameIdx].withdrawn[0],
+            gamesData[gameIdx].withdrawn[1]
+        );
+    }
 
     // Operations
 
@@ -137,6 +154,8 @@ struct Game
       gamesData[nextGameIdx].amount = msg.value;
       gamesData[nextGameIdx].nicks[0] = nick;
       gamesData[nextGameIdx].players[0] = msg.sender;
+      gamesData[nextGameIdx].lastTransaction = now;
+
       openGames.push(nextGameIdx);
 
       gameIdx = nextGameIdx;
@@ -159,9 +178,9 @@ struct Game
     gamesData[gameIdx].guestRandomNumber = randomNumber;
     gamesData[gameIdx].nicks[1] = nick;
     gamesData[gameIdx].players[1] = msg.sender;
-    gamesData[gameIdx].lastTransactions[1] = now;
+    gamesData[gameIdx].lastTransaction = now;
 
-    emit GameAccepted(gameIdx);
+    emit GameAccepted(gameIdx, gamesData[gameIdx].players[0]);
 
     // Remove Accepted game from the openGames list
     uint32 idxToDelete = uint32(gamesData[gameIdx].index);
@@ -182,21 +201,22 @@ struct Game
         bytes32 computedHash = saltedHash(revealedRandomNumber, revealedSalt);
         if(computedHash != gamesData[gameIdx].creatorHash){
             gamesData[gameIdx].status = 12;
-            emit GameEnded(gameIdx);
+            emit GameEnded(gameIdx, msg.sender);
+            emit GameEnded(gameIdx, gamesData[gameIdx].players[1]);
             return;
         }
 
-        gamesData[gameIdx].lastTransactions[0] = now;
+        gamesData[gameIdx].lastTransaction = now;
 
         // Logic for deciding turns, if even-even/odd-odd, game creator will have the first chance
         // If odd-even, guest will have the first chance - ||Define starting player||
         if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) & 0x0 == 0){
             gamesData[gameIdx].status = 1;
-            emit GameStarted(gameIdx);
+            emit GameStarted(gameIdx, gamesData[gameIdx].players[1]);
         }
         else {
             gamesData[gameIdx].status = 2;
-            emit GameStarted(gameIdx);
+            emit GameStarted(gameIdx, gamesData[gameIdx].players[1]);
         }
     }
 
@@ -211,18 +231,22 @@ struct Game
 
         if(gamesData[gameIdx].status == 1){
           require(gamesData[gameIdx].players[0] == msg.sender, "Position marked! Game creator is the player 1");
-          emit PositionMarked(gameIdx);
+          
+          cells[cell] = 1;
+          emit PositionMarked(gameIdx, gamesData[gameIdx].players[1]);
         }
 
         else if(gamesData[gameIdx].status == 2){
           require(gamesData[gameIdx].players[1] == msg.sender, "Position marked! Guest is the player 1");
-          emit PositionMarked(gameIdx);
+          
+          cells[cell] = 2;
+          emit PositionMarked(gameIdx, gamesData[gameIdx].players[0]);
         }
         else{
           revert();
         }
 
-        emit PositionMarked(gameIdx);
+        gamesData[gameIdx].lastTransaction = now;
 
         // Board indexes:
         //    0 1 2
@@ -238,7 +262,8 @@ struct Game
         (cells[0] & cells [4] & cells [8] != 0x0) || (cells[2] & cells [4] & cells [6] != 0x0)) {
             // winner
             gamesData[gameIdx].status = 10 + cells[cell];  // 11 or 12
-            emit GameEnded(gameIdx);
+            emit GameEnded(gameIdx, gamesData[gameIdx].players[0]);
+            emit GameEnded(gameIdx, gamesData[gameIdx].players[1]);
         }
 
         // All cells filled..! Hence, a draw
@@ -247,7 +272,8 @@ struct Game
             cells[7] != 0x0 && cells[8] != 0x0) {
             
             gamesData[gameIdx].status = 10;
-            emit GameEnded(gameIdx);
+            emit GameEnded(gameIdx, gamesData[gameIdx].players[0]);
+            emit GameEnded(gameIdx, gamesData[gameIdx].players[1]);
         }
         else {
             if(cells[cell] == 1){
@@ -270,45 +296,65 @@ struct Game
       uint8 status = gamesData[gameIdx].status;
 
       // Since status = 0, consider it ends in a draw
-      if(status == 0){
-        require(gamesData[gameIdx].players[0] == msg.sender, "The Game creator");
-        require(gamesData[gameIdx].players[1] == address(0x0), "The guest tbd");
-        require(now - gamesData[gameIdx].lastTransactions[0] > timeout, "Game is still alive" );
+      if(status == 0) {
+      require((now - gamesData[gameIdx].lastTransaction) > timeout);
 
-         gamesData[gameIdx].withdrawn[0] = true;          // Amount withdrawn from the player
-         gamesData[gameIdx].status = 10;                  // consider it ended in draw
-         msg.sender.transfer(gamesData[gameIdx].amount);  // Amount transfered from player to the contract address
-         emit GameEnded(gameIdx);
-        // Remove this gameId from the openGames list
-        uint32 idxToDelete = uint32(gamesData[gameIdx].index);
-        uint32 lastOpenGameIdx = openGames[openGames.length - 1];
-        openGames[idxToDelete] = lastOpenGameIdx;
-        gamesData[lastOpenGameIdx].index = idxToDelete;
-        openGames.length--;
+          // Player 1 cancels the non-accepted game
+          if(gamesData[gameIdx].players[0] == msg.sender) {
+            // checking !withdrawn[0], status would not be 0
+            require(gamesData[gameIdx].players[1] == address(0x0));
 
-        emit GameEnded(gameIdx);
+            gamesData[gameIdx].withdrawn[0] = true;
+            gamesData[gameIdx].status = 10; // consider it ended in draw
+            msg.sender.transfer(gamesData[gameIdx].amount);
+            
+            // The game was open
+            // Remove from the open games list
+            uint32 openListIdxToDelete = uint32(gamesData[gameIdx].index);
+            openGames[openListIdxToDelete] = openGames[openGames.length - 1];
+            gamesData[gameIdx].index = openListIdxToDelete;
+            openGames.length--;
+
+            emit GameEnded(gameIdx, msg.sender);
+          }
+          // Player 2 claims the non-confirmed game
+          else if(gamesData[gameIdx].players[1] == msg.sender) {
+              // checking !withdrawn[1] is redundant, status would not be 0
+
+              gamesData[gameIdx].withdrawn[1] = true;
+              gamesData[gameIdx].status = 12; // consider it won by P2
+              msg.sender.transfer(gamesData[gameIdx].amount * 2);
+          
+              // The game was not open: no need to clean it
+              // from the openGames[] list
+
+              emit GameEnded(gameIdx, msg.sender);
+          }
+          else {
+              revert();
+          }
       }
       else if(status == 1){
-        // Player2 won the claim 
+        // Player2 won the game  
         require(gamesData[gameIdx].players[1] == msg.sender);
-        require(now - gamesData[gameIdx].lastTransactions[0] > timeout, "Game is still alive" );
+        require(now - gamesData[gameIdx].lastTransaction > timeout, "Game is still alive" );
 
         gamesData[gameIdx].withdrawn[1] = true;
         gamesData[gameIdx].status = 12;
         msg.sender.transfer(gamesData[gameIdx].amount * 2);
 
-         emit GameEnded(gameIdx);
+        emit GameEnded(gameIdx, gamesData[gameIdx].players[0]);
       }
       else if(status == 2){
         // Player1 won the game
         require(gamesData[gameIdx].players[0] == msg.sender);
-        require(now - gamesData[gameIdx].lastTransactions[0] > timeout, "Game is still alive" );
+        require(now - gamesData[gameIdx].lastTransaction > timeout, "Game is still alive" );
 
         gamesData[gameIdx].withdrawn[1] = true;
         gamesData[gameIdx].status = 11;
         msg.sender.transfer(gamesData[gameIdx].amount * 2);
 
-         emit GameEnded(gameIdx);
+        emit GameEnded(gameIdx, gamesData[gameIdx].players[1]);
       }
       else if(status == 10){
             if(gamesData[gameIdx].players[0] == msg.sender){
@@ -343,7 +389,17 @@ struct Game
       }
     }
 
-   
+   // The contract owner can pause all functionality
+    function circuitBreaker() public
+    onlyOwner
+    checkIfPaused{
+    contractPaused = true;
+    }
+    function circuitMaker() public
+    onlyOwner{
+      contractPaused = false;
+    }
+
 
     // Imported from library - public helper function
     function saltedHash(uint8 randomNumber, string memory salt) public pure returns (bytes32) {
