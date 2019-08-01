@@ -1,5 +1,5 @@
 import { getInjectedWeb3, getWebSocketWeb3 } from "./web3"
-import gamesOnStakesAbi from "./gamesOnStakes.json"
+import gamesOnStakesAbi from "./GamesOnStakes.json"
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
 
 export default function (useBrowserWeb3 = false) {

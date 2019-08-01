@@ -6,6 +6,18 @@ import "truffle/DeployedAddresses.sol";
 import "../contracts/GamesOnStakes.sol";
 import "../contracts/StringSupport.sol";
 
+/* SPECS
+
+*The game must exist
+*The user requesting the withdrawal must be among the game players
+*If the game creator does not confirm the game on time, the opponent 
+ should be able to withdraw the full amount and end the game.
+*If a player of a started game does not mark any position on time, 
+ the opponent should be able to withdraw the full amount and end the game.
+*Only the winner of the game can withdraw 2x the initial bet
+
+*/
+
 contract TestGamesOnStakes4 {
     GamesOnStakes gamesInstance;
     uint public initialBalance = 1 ether;

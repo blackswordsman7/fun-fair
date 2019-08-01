@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import { Row, Col, Divider, Button, Spin, Icon, message, notification } from "antd"
 
 import Media from "react-media"
-import getDipDappDoeInstance from "../contracts/dip-dapp-doe"
+import getGamesOnStakesInstance from "../contracts/Games-On-Stakes"
 import { getWebSocketWeb3, getInjectedWeb3 } from "../contracts/web3"
 import LoadingView from "../views/loading"
 import MessageView from "../views/message"
@@ -36,30 +36,30 @@ class GameView extends Component {
             this.setState({ loadingGameInfo: false })
         })
 
-        const DipDappDoe = getDipDappDoeInstance()
+        const GamesOnStakes = getGamesOnStakesInstance()
 
-        this.acceptedEvent = DipDappDoe.events.GameAccepted({
+        this.acceptedEvent = GamesOnStakes.events.GameAccepted({
             filter: { opponent: this.props.accounts && this.props.accounts[0] },
             fromBlock: this.props.status.startingBlock || 0
         })
             .on('data', event => this.onGameAccepted(event))
             .on('error', err => message.error(err && err.message || err))
 
-        this.startedEvent = DipDappDoe.events.GameStarted({
+        this.startedEvent = GamesOnStakes.events.GameStarted({
             filter: { opponent: this.props.accounts && this.props.accounts[0] },
             fromBlock: this.props.status.startingBlock || 0
         })
             .on('data', event => this.onGameStarted(event))
             .on('error', err => message.error(err && err.message || err))
 
-        this.positionMarkedEvent = DipDappDoe.events.PositionMarked({
+        this.positionMarkedEvent = GamesOnStakes.events.PositionMarked({
             filter: { opponent: this.props.accounts && this.props.accounts[0] },
             fromBlock: this.props.status.startingBlock || 0
         })
             .on('data', event => this.onPositionMarked(event))
             .on('error', err => message.error(err && err.message || err))
 
-        this.endedEvent = DipDappDoe.events.GameEnded({
+        this.endedEvent = GamesOnStakes.events.GameEnded({
             filter: { opponent: this.props.accounts && this.props.accounts[0] },
             fromBlock: this.props.status.startingBlock || 0
         })
@@ -181,27 +181,27 @@ class GameView extends Component {
     // Call helper
 
     fetchGameStatus() {
-        const DipDappDoe = getDipDappDoeInstance()
+        const GamesOnStakes = getGamesOnStakesInstance()
 
         const result = {}
 
-        return DipDappDoe.methods.getGameInfo(this.props.match.params.id).call().then(gameInfo => {
+        return GamesOnStakes.methods.getGameInfo(this.props.match.params.id).call().then(gameInfo => {
             result.amount = gameInfo.amount
             result.cells = gameInfo.cells
             result.nick1 = gameInfo.nick1
             result.nick2 = gameInfo.nick2
             result.status = gameInfo.status
 
-            return DipDappDoe.methods.getGamePlayers(this.props.match.params.id).call()
+            return GamesOnStakes.methods.getGamePlayers(this.props.match.params.id).call()
         }).then(players => {
             result.player1 = players.player1
             result.player2 = players.player2
 
-            return DipDappDoe.methods.getGameTimestamp(this.props.match.params.id).call()
+            return GamesOnStakes.methods.getGameTimestamp(this.props.match.params.id).call()
         }).then(timestamp => {
             result.lastTransaction = timestamp * 1000
 
-            return DipDappDoe.methods.getGameWithdrawals(this.props.match.params.id).call()
+            return GamesOnStakes.methods.getGameWithdrawals(this.props.match.params.id).call()
         }).then(withdrawals => {
             result.withdrawn1 = withdrawals.player1
             result.withdrawn2 = withdrawals.player2
@@ -217,7 +217,7 @@ class GameView extends Component {
             return
         }
 
-        let DipDappDoe = getDipDappDoeInstance(true)
+        let GamesOnStakes = getGamesOnStakesInstance(true)
 
         let data = this.props.status.createdGames[this.props.match.params.id]
         if (!data) {
@@ -229,7 +229,7 @@ class GameView extends Component {
 
         this.setState({ confirmLoading: true })
 
-        return DipDappDoe.methods.confirmGame(this.props.match.params.id, data.number, data.salt)
+        return GamesOnStakes.methods.confirmGame(this.props.match.params.id, data.number, data.salt)
             .send({ from: this.props.accounts[0] })
             .then(tx => {
                 this.setState({ confirmLoading: false })
@@ -279,11 +279,11 @@ class GameView extends Component {
 
         let cell = game.cells.findIndex(c => c == "0")
 
-        let DipDappDoe = getDipDappDoeInstance(true)
+        let GamesOnStakes = getGamesOnStakesInstance(true)
 
         this.setState({ markLoading: true })
 
-        return DipDappDoe.methods.markPosition(this.props.match.params.id, cell)
+        return GamesOnStakes.methods.markPosition(this.props.match.params.id, cell)
             .send({ from: this.props.accounts[0] })
             .then(tx => {
                 this.setState({ markLoading: false })
@@ -321,11 +321,11 @@ class GameView extends Component {
             return message.error("The cell is already taken")
         }
 
-        let DipDappDoe = getDipDappDoeInstance(true)
+        let GamesOnStakes = getGamesOnStakesInstance(true)
 
         this.setState({ markLoading: true })
 
-        return DipDappDoe.methods.markPosition(this.props.match.params.id, cell)
+        return GamesOnStakes.methods.markPosition(this.props.match.params.id, cell)
             .send({ from: this.props.accounts[0] })
             .then(tx => {
                 this.setState({ markLoading: false })
@@ -357,11 +357,11 @@ class GameView extends Component {
     }
 
     requestWithdrawal() {
-        let DipDappDoe = getDipDappDoeInstance(true)
+        let GamesOnStakes = getGamesOnStakesInstance(true)
 
         this.setState({ withdrawLoading: true })
 
-        return DipDappDoe.methods.withdraw(this.props.match.params.id)
+        return GamesOnStakes.methods.withdraw(this.props.match.params.id)
             .send({ from: this.props.accounts[0] })
             .then(tx => {
                 this.setState({ withdrawLoading: false })

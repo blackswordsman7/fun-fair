@@ -38,7 +38,15 @@ contract TestGamesOnStakes1 {
         Assert.notEqual(hash2, hash3, "Different numbers and salt should produce different hashes");
     }
 
-        
+    /* SPECS
+
+    *We will need to emit events with the new game’s ID so that the client can retrieve 
+    the value.
+    *The user’s address should be set as the creator
+    *The creator has to commit to a random number by providing a salted hash of it
+    *The board should be empty
+    *If any money was sent, it has to be registered
+    */
     function testGameCreation() public {
         uint8[9] memory cells;
         uint8 status;
@@ -78,6 +86,17 @@ contract TestGamesOnStakes1 {
         Assert.isAbove(lastTransaction, 0, "The first player's transaction timestamp should be set");
     }
 
+    /* SPECS
+
+    *The game must be created, accepted and not yet started
+    *The creator has to reveal his/her random number and the salt
+    *Only the creator can confirm a game
+    *Player 1 should start if the last bit of both random numbers is equal; 
+     player 2 should start otherwise
+    *The creator’s last timestamp has to be updated
+
+    */
+    
     function testGameAccepted() public{
 
         uint8[9] memory cells;

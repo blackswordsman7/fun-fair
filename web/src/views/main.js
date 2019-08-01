@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import { Row, Col, Divider, Button, Input, InputNumber, Spin, Icon, message, notification } from "antd"
 
 import Media from "react-media"
-import getDipDappDoeInstance from "../contracts/dip-dapp-doe"
+import getGameOnStakesInstance from "../contracts/Games-On-Stakes"
 import { getWebSocketWeb3 } from "../contracts/web3"
 import ConfirmAcceptModal from "../widgets/confirm-accept-modal"
 import { fetchOpenGames } from "../store/actions";
@@ -33,10 +33,10 @@ class MainView extends Component {
         else if (typeof this.state.number == "undefined") return message.error("Please, choose a random number")
         else if (!this.state.salt) return message.error("Please, type a random string")
 
-        const DipDappDoe = getDipDappDoeInstance(true)
+        const GamesOnStakes = getGamesOnStakesInstance(true)
         const number = this.state.number % 256
 
-        return DipDappDoe.methods.saltedHash(number, this.state.salt).call()
+        return GamesOnStakes.methods.saltedHash(number, this.state.salt).call()
             .then(hash => {
                 let web3 = getWebSocketWeb3()
                 let value = 0
@@ -45,7 +45,7 @@ class MainView extends Component {
                 }
 
                 this.setState({ creationLoading: true })
-                return DipDappDoe.methods.createGame(hash, this.state.nick).send({ value, from: this.props.accounts[0] })
+                return GamesOnStakes.methods.createGame(hash, this.state.nick).send({ value, from: this.props.accounts[0] })
             }).then(tx => {
                 this.setState({ creationLoading: false })
                 if (!tx.events.GameCreated || !tx.events.GameCreated.returnValues) {
@@ -102,12 +102,12 @@ class MainView extends Component {
 
             values.number = values.number % 256
 
-            const DipDappDoe = getDipDappDoeInstance(true)
+            const GamesOnStakes = getGamesOnStakesInstance(true)
 
             this.setState({ acceptLoading: true, showAcceptModal: false })
 
             // TRANSACTION
-            return DipDappDoe.methods.acceptGame(game.id, values.number, values.nick)
+            return GamesOnStakes.methods.acceptGame(game.id, values.number, values.nick)
                 .send({ value: game.amount || 0, from: this.props.accounts[0] })
                 .then(tx => {
                     this.setState({ acceptLoading: false })
@@ -158,8 +158,8 @@ class MainView extends Component {
 
     renderGameList() {
         return <div className="card">
-            <h1 className="light">Dip Dapp Doe</h1>
-            <p className="light">Dip Dapp Doe is an Ethereum distributed app. Select a game to join or create a new one.</p>
+            <h1 className="light">GamesOnStakes</h1>
+            <p className="light">GamesOnStakes is an Ethereum distributed app. Select a game to join or create a new one.</p>
 
             <Divider />
 
