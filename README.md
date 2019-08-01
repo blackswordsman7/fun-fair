@@ -7,12 +7,12 @@ Consensys-bootcamp-final-project
 I have started on this path with a basic tic-tac-toe game.
 
 ### Use case of the project
-Sachin opens a game, bets 0.01 ether and appears in a list of users who are up to play. <br>
-Sanchay sees Sachin on the list and accepts the game by betting 0.01 ether too. <br>
-Sachin confirms and the game starts. <br>
-Sachin and Sanchay make their moves, one after each other. <br>
-If one of them wins, he or she can withdraw 0.02 ether from the contract. <br>
-If the game ends in a draw, both users can withdraw their respective money i.e. 0.1 ether. <br>
+- Sachin opens a game, bets 0.01 ether and appears in a list of users who are up to play. <br>
+- Sanchay sees Sachin on the list and accepts the game by betting 0.01 ether too. <br>
+- Sachin confirms and the game starts. <br>
+- Sachin and Sanchay make their moves, one after each other. <br>
+- If one of them wins, he or she can withdraw 0.02 ether from the contract. <br>
+- If the game ends in a draw, both users can withdraw their respective money i.e. 0.1 ether. <br>
 
 ### Original vision of fun-fair
 
@@ -61,14 +61,7 @@ Create a gaming SDK, where gamers can clash with each other, and eventually put 
 ## Future Prospects
 
 1. Writing test for contract in JS
-2. Using battle-tested contracts
-3. 
-4. 
-5. 
-6. 
-7. 
-8. 
-9. 
+2. Using battle-tested contracts 
 
 
 ## Guidelines for the project
