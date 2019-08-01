@@ -3,6 +3,15 @@ Consensys-bootcamp-final-project
 
 >Author: Sachin Mittal
 
+## Aim
+
+Create a gaming SDK, where gamers can clash with each other, and eventually put some skin in the game to make it more competitive.
+
+## Motivation
+
+- According to the stats of DApp reviewing websites, and consensys blogs. The blockchain mainstream adoption and increase in  DAU (Daily active users) can be enhanced by Games, and casinos. 
+
+
 ## What does your project do?
 I have started on this path with a basic tic-tac-toe game.
 
@@ -11,22 +20,9 @@ I have started on this path with a basic tic-tac-toe game.
 - Sanchay sees Sachin on the list and accepts the game by betting 0.01 ether too. <br>
 - Sachin confirms and the game starts. <br>
 - Sachin and Sanchay make their moves, one after each other. <br>
-- If one of them wins, he or she can withdraw 0.02 ether from the contract. <br>
+- If one of them wins, that player can withdraw 0.02 ether from the contract. <br>
 - If the game ends in a draw, both users can withdraw their respective money i.e. 0.1 ether. <br>
 
-### Original vision of fun-fair
-
-- Leveraging crowd wisdom to hit schelling point and find the TRUTH.
-
-### Motivation
-
-- According to the stats of DApp reviewing websites, and consensys blogs. The blockchain mainstream adoption and increase in  DAU (Daily active users) can be enhanced by Games, and casinos. 
-
-
-
-### Aim
-
-Create a gaming SDK, where gamers can clash with each other, and eventually put some skin in the game to make it more competitive.
 
 ## How to set it up ?
 
