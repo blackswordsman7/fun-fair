@@ -28,15 +28,88 @@ I have started on this path with a basic tic-tac-toe game.
 
 Create a gaming SDK, where gamers can clash with each other, and eventually put some skin in the game to make it more competitive.
 
-## How to set it up
+## How to set it up ?
 
-## Developement
+### Getting started
+
+This project makes use of `runner-cli` as the task runner:
+
+    npm i -g runner-cli
+
+The tasks are declared in `blockchain/taskfile` and `web/taskfile`, which are shell scripts on steroids.
+
+To see the available commands, simply invoke:
+
+    run
+
+To invoke a command:
+
+    run build
+
+Or:
+
+    ./taskfile build
+
+### Blockchain
+
+* Install the dependencies: `run init`
+* Run the test suite (for TDD): `run test`
+* Compile the contracts: `run build`
+* Deploy the contract to the blockchain: `run deploy`
+
+### Web
+
+* Develop with live reload: `run dev`
+    * Start a local blockchain (Ganache)
+    * Deploy the contracts to the local blockchain
+    * Open Chromium with MetaMask pointing to ganache
+    * Bundle the web and serve it with live reload
+* Develop with live reload: `run dev ropsten`
+    * Start a dev server with live reload
+    * The ropsten test network will be used
+* Build for release: `run build`
+    * Bundle the static web assets to `./build`
+* Run the E2E test: `run test`
+    * Start a local blockchain
+    * Deploy the contracts to the local blockchain
+    * Bundle the web
+    * Start a local server
+    * Open Chromium (puppeteer)
+    * Run the tests locally
+
+## Dependencies
+
+To work with this project you need:
+
+	[sudo] npm i -g truffle parcel-bundler solc ganache-cli
+
+* ParcelJS (HTML/JS/CSS bundler)
+* Truffle (Solidity development tools)
+* Solc (Solidity compiler)
+* Ganache (local blockchain)
+
+## Typical workflow
+
+    [sudo] npm i -g runner-cli
+
+## Deployment
+Blockchain:
+
+    cd blockchain
+    run deploy  # implies "run build"
+
+Frontend:
+
+    cd web
+    run build
+    ls ./build  # your dist files are here
+
 
 
 ## Evaluation checklist
 
 - [x] README.md
-- [] Screen recording [!!]
+- [x] Screen recording [!!]
 - [x] Truffle project - compile, migrate, test
 - [x] Smart Contract Commented
 - [x] Library use
@@ -48,12 +121,12 @@ Create a gaming SDK, where gamers can clash with each other, and eventually put 
     - [x] Structured tests
     - [x] All pass
 - [x] Circuit breaker/Emergency stop
-- [ ] Project includes a file called design_pattern_desicions.md / at least 2 implemented
+- [x] Project includes a file called design_pattern_desicions.md / at least 2 implemented
 - [x] avoiding_common_attacks.md and explains at least 3 attacks and how it mitigates
 - [x] deployed_addresses.txt that indicates contract address on testnet
-- [ ] upgradeable design pattern
+- [x] upgradeable design pattern
 - [ ] One contract written in Vyper or LLL
-- [ ] IPFS
+- [x] IPFS
 - [ ] uPort
 - [ ] ENS
 - [ ] Oracle
@@ -61,10 +134,9 @@ Create a gaming SDK, where gamers can clash with each other, and eventually put 
 ## Future Prospects
 
 1. Writing test for contract in JS
-2. Using battle-tested contracts 
+2. Using battle-tested contracts for enhancing security
+3. Making code, and development workflow developer friendly.
 
 
-## Guidelines for the project
 
-https://docs.google.com/document/d/1fSiejecMogc2h7aJxIl9tfZbHRFXTipftWLevUKAmQ4/edit
 
