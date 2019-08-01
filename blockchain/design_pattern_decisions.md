@@ -11,10 +11,6 @@ Instead of a direct hash, I have used a salted hash. The user will have to revea
 
  Implemented to ensure payouts always occurred, even for abandoned games or sore losers. 
 
-### State Machine:
-
- I used an enum to indicate what state a game was in, to determine what functions can be called on it.
-
 ### "Fail Early and Fail Loud":
 
  I used require() statements wherever possible, as the first execution in the function logic.
