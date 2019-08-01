@@ -45,8 +45,7 @@ contract TestGamesOnStakes1 {
         uint amount;
         string memory nick1;
         string memory nick2;
-        uint lastTransaction1;
-        uint lastTransaction2;
+        uint lastTransaction;
 
         bytes32 hash = gamesInstance.saltedHash(123, "my salt goes here");
         uint32 gameIdx = gamesInstance.createGame(hash, "Sachin");
@@ -56,6 +55,7 @@ contract TestGamesOnStakes1 {
         uint32[] memory openGames = gamesInstance.getOpenGames();
   
         Assert.equal(openGames.length, 1, "One game should have been created");
+        Assert.equal(uint(openGames[0]), 0, "The first game should have index 0");
         
 
         (cells, status, amount, nick1, nick2) = gamesInstance.getGameInfo(gameIdx);
@@ -74,10 +74,8 @@ contract TestGamesOnStakes1 {
         Assert.equal(nick1, "Sachin", "The nick should be Sachin");
         Assert.isEmpty(nick2, "Sanchay should be empty");
 
-        (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
-        Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
-        Assert.equal(lastTransaction2, 0, "The second player's transaction timestamp should be empty");
-       
+        lastTransaction = gamesInstance.getGameTimestamp(gameIdx);
+        Assert.isAbove(lastTransaction, 0, "The first player's transaction timestamp should be set");
     }
 
     function testGameAccepted() public{
@@ -87,8 +85,7 @@ contract TestGamesOnStakes1 {
         uint amount;
         string memory nick1;
         string memory nick2;
-        uint lastTransaction1;
-        uint lastTransaction2;
+        uint lastTransaction;
 
         uint32[] memory openGames = gamesInstance.getOpenGames();
         Assert.equal(openGames.length, 1, "One game should be available");
@@ -98,8 +95,6 @@ contract TestGamesOnStakes1 {
         gamesInstance.acceptGame(gameIdx, 234, "Sanchay");
 
         openGames = gamesInstance.getOpenGames();
-        // Assert.equal(openGames.length, 1, "One game should still exist");
-        // Assert.equal(uint(openGames[0]), 0, "The game should still have index 0");
 
         Assert.equal(openGames.length, 0, "The game should not be available anymore");
 
@@ -118,9 +113,8 @@ contract TestGamesOnStakes1 {
         Assert.equal(nick1, "Sachin", "The nick should be Sachin");
         Assert.equal(nick2, "Sanchay", "The nick should be Sanchay");
 
-        (lastTransaction1, lastTransaction2) = gamesInstance.getGameTimestamps(gameIdx);
-        Assert.isAbove(lastTransaction1, 0, "The first player's transaction timestamp should be set");
-        Assert.isAbove(lastTransaction2, 0, "The second player's transaction timestamp should be set");
+        lastTransaction = gamesInstance.getGameTimestamp(gameIdx);
+        Assert.isAbove(lastTransaction, 0, "The first player's transaction timestamp should be set");
     }
    
 }

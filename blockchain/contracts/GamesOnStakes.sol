@@ -116,7 +116,7 @@ struct Game
         );
     }
 
-    function getGameTimestamps(uint32 gameIdx) 
+    function getGameTimestamp(uint32 gameIdx) 
     public 
     view 
   returns (uint lastTransaction) {
@@ -147,7 +147,7 @@ struct Game
    public 
    payable 
    returns (uint32 gameIdx) {
-     require(nextGameIdx > gameIdx);
+     require(nextGameIdx+1 > nextGameIdx);
 
       gamesData[nextGameIdx].index = uint32(openGames.length);
       gamesData[nextGameIdx].creatorHash = randomNumberHash;
@@ -210,7 +210,7 @@ struct Game
 
         // Logic for deciding turns, if even-even/odd-odd, game creator will have the first chance
         // If odd-even, guest will have the first chance - ||Define starting player||
-        if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) & 0x0 == 0){
+        if((revealedRandomNumber ^ gamesData[gameIdx].guestRandomNumber) & 0x01 == 0){
             gamesData[gameIdx].status = 1;
             emit GameStarted(gameIdx, gamesData[gameIdx].players[1]);
         }
@@ -350,7 +350,7 @@ struct Game
         require(gamesData[gameIdx].players[0] == msg.sender);
         require(now - gamesData[gameIdx].lastTransaction > timeout, "Game is still alive" );
 
-        gamesData[gameIdx].withdrawn[1] = true;
+        gamesData[gameIdx].withdrawn[0] = true;
         gamesData[gameIdx].status = 11;
         msg.sender.transfer(gamesData[gameIdx].amount * 2);
 
@@ -368,6 +368,9 @@ struct Game
 
           gamesData[gameIdx].withdrawn[1] = true;
           msg.sender.transfer(gamesData[gameIdx].amount);
+           }
+           else{
+             revert();
            }
       }
       else if(status == 11){

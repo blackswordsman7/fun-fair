@@ -3,6 +3,8 @@
 
 #Dependencies
 /node_modules
+/blockchain/node_modules
+/blockchain/deploy/node_modules
 
 #Production
 /build/contracts
