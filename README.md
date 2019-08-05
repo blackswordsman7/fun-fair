@@ -84,6 +84,8 @@ To work with this project you need:
 * Solc (Solidity compiler)
 * Ganache (local blockchain)
 
+* Note: Change the mneumonic given in .secret file, and replace it with mneumonic given in your ganache-cli.
+
 ## Typical workflow
 
     [sudo] npm i -g runner-cli
