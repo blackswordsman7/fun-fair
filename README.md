@@ -134,6 +134,7 @@ Frontend:
 1. Writing test for contract in JS
 2. Using battle-tested contracts for enhancing security
 3. Making code, and development workflow developer friendly.
+4. Run the project, using docker. 
 
 
 
