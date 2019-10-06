@@ -124,7 +124,7 @@ Frontend:
 - [x] deployed_addresses.txt that indicates contract address on testnet
 - [x] upgradeable design pattern
 - [ ] One contract written in Vyper or LLL
-- [x] IPFS
+- [ ] IPFS
 - [ ] uPort
 - [ ] ENS
 - [ ] Oracle
